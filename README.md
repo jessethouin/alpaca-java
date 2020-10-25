@@ -1,25 +1,22 @@
-# UPDATING FROM 5.0.13 TO 5.2
-This repository has been transferred and as a result, lots of refactoring has occurred. This is because artifacts cannot be transferred in Maven Central. So, the new groupID for the project is `net.jacobpeterson` and all packages have been renamed from `io.github.mainstringargs` to `net.jacobpeterson`. Please refactor accordingly when you update from 5.0.13 to 5.2. Thanks!
-<p align="center"><a href="https://petersoj.github.io/alpaca-java/" target="_blank"><img src="https://i.imgur.com/mQcuK61.jpg"></a></p>
+<p align="center"><a href="https://petersoj.github.io/alpaca-java/" target="_blank"><img src="https://i.imgur.com/D8XzGvJ.png"></a></p>
 <p align="center">
-<a href="https://search.maven.org/artifact/net.jacobpeterson/alpaca-java" target="_blank"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/net.jacobpeterson/alpaca-java"></a> <a href="https://javadoc.io/doc/net.jacobpeterson/alpaca-java" target="_blank"><img src="https://javadoc.io/badge/net.jacobpeterson/alpaca-java.svg" alt="Javadocs"></a> <a href="https://travis-ci.org/petersoj/alpaca-java" target="_blank"><img src="https://travis-ci.org/petersoj/alpaca-java.svg?branch=master" alt="Build Status"></a> <a href="https://codecov.io/gh/petersoj/alpaca-java" target="_blank"><img src="https://codecov.io/gh/petersoj/alpaca-java/branch/unittesting/graph/badge.svg" />
+<a href="https://search.maven.org/artifact/net.jacobpeterson/alpaca-java" target="_blank"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/net.jacobpeterson/alpaca-java"></a> <a href="https://javadoc.io/doc/net.jacobpeterson/alpaca-java" target="_blank"><img src="https://javadoc.io/badge/net.jacobpeterson/alpaca-java.svg" alt="Javadocs"></a> <a href="https://travis-ci.com/github/Petersoj/alpaca-java" target="_blank"><img src="https://travis-ci.com/Petersoj/alpaca-java.svg?branch=master" alt="Build Status"></a> <a href="https://codecov.io/gh/petersoj/alpaca-java" target="_blank"><img src="https://codecov.io/gh/petersoj/alpaca-java/branch/unittesting/graph/badge.svg" />
 </a> <a href="https://opensource.org/licenses/MIT" target="_blank"><img alt="GitHub" src="https://img.shields.io/github/license/petersoj/alpaca-java"></a>    
 </p>
 
-# Overview
+## Overview
 This is a Java implementation for <a href="https://alpaca.markets/">Alpaca</a>. Alpaca  lets you build and trade with real-time market data for free. This library is community developed and if you have any questions, please ask them on the [Alpaca Slack #dev-alpaca-java channel](https://alpaca.markets/slack) or on the [Alpaca Forums](https://forum.alpaca.markets/).
 
 ## Table of Contents
-1. [Alpaca Java Building](#alpaca-java-building)
-2. [Alpaca Java Gradle Integration](#alpaca-java-gradle-integration)
-3. [Alpaca Java Maven Integration](#alpaca-java-maven-integration)
-4. [Configuration](#configuration)
-5. [AlpacaAPI Example](#alpacaapi-example)
+1. [Building](#building)
+2. [Gradle Integration](#gradle-integration)
+3. [Maven Integration](#maven-integration)
+4. [Maven Central Integrity](#maven-central-integrity)
+5. [Configuration](#configuration)
+6. [AlpacaAPI Example](#alpacaapi-example)
 7. [PolygonAPI Example](#polygonapi-example)
 
-## Alpaca Java Building
-
-This project exposes that data as a Java project.  
+## Building
 
 To build this project yourself, clone the project and run:
 
@@ -27,17 +24,23 @@ To build this project yourself, clone the project and run:
 ./gradlew build
 ```
 
-## Alpaca Java Gradle Integration
+To build this project and install it to your local maven repo, run:
+
+```
+./gradlew build install
+```
+
+## Gradle Integration
 
 Add the following dependency to your build.gradle file:
 
 ```
 dependencies {
-	compile "net.jacobpeterson:alpaca-java:5.2"
+    compile "net.jacobpeterson:alpaca-java:5.4"
 }
 ```
 
-## Alpaca Java Maven Integration
+## Maven Integration
 
 Add the following dependency to your pom.xml file:
 
@@ -45,10 +48,31 @@ Add the following dependency to your pom.xml file:
 <dependency>
     <groupId>net.jacobpeterson</groupId>
     <artifactId>alpaca-java</artifactId>
-    <version>5.2</version>
+    <version>5.4</version>
     <scope>compile</scope>
 </dependency>
 ```
+
+## Maven Central Integrity
+
+Since this community-developed library uses sensitive information (e.g. your Alpaca API keys),
+it's important to verify that the jar in Maven Central that is downloaded via Gradle or Maven is indeed the jar that is built
+from this source code that you see on this Github repository. This library has been configured to create reproducible builds
+that provide the same file checksums when built on any machine. Maven Central has a way to verify that artifacts are uploaded
+by the domain holder of the artifact group ID (e.g. `jacobpeterson.net`) via PGP artifact signing, but lacks the ability
+to verify the legitimacy of those artifacts in the context of an open-source library. To verify that this dependency
+that you use in your trading algorithm projects is indeed legitimate, we need to compare the Jar MD5 checksum in Maven Central
+with the Jar MD5 checksum from this source code:
+1. Clone the repo somewhere: `git clone https://github.com/Petersoj/alpaca-java`
+2. `cd alpaca-java`
+3. Build the project: `./gradlew build`
+    1. Note: if you build the project twice without a `clean` task in between (e.g. `./gradlew build; ./gradlew build`), the MD5 checksum will change.
+4. Generate the MD5 checksum: `md5 build/libs/alpaca-java-5.4.jar`
+5. Confirm that the checksum value in Maven Central is the same as in step 4:
+`curl https://repo1.maven.org/maven2/net/jacobpeterson/alpaca-java/5.4/alpaca-java-5.4.jar.md5`
+
+If the checksums are different, please [create a new issue](https://github.com/Petersoj/alpaca-java/issues/new)!
+
 ## Configuration
 
 If you plan on using the alpaca.properties, set the following properties in an alpaca.properties file on the classpath:
@@ -300,7 +324,7 @@ Bars response:
         Volume: 1.4021695E7
 ```
 
-# PolygonAPI Example
+## PolygonAPI Example
 
 This example uses the `PolygonAPI` class to subscribe to the Polygon websocket stream, get stocks splits, and get aggregates. Click [here](https://polygon.io/docs/) for the general Polygon API documentation and click [here](https://javadoc.io/doc/net.jacobpeterson/alpaca-java/latest/net/jacobpeterson/polygon/PolygonAPI.html) for the `PolygonAPI` javadoc.
 
